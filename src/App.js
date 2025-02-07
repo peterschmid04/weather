@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./App.css";
 
 export default function WeatherApp() {
     const [city, setCity] = useState("");
@@ -19,7 +20,7 @@ export default function WeatherApp() {
             const data = await response.json();
             setWeather({
                 city: data.name,
-                temp: (data.main.temp).toFixed(1),
+                temp: (data.main.temp - 273.15).toFixed(1),
                 humidity: data.main.humidity,
                 description: data.weather[0].description,
                 emoji: getWeatherEmoji(data.weather[0].id),
@@ -61,30 +62,30 @@ export default function WeatherApp() {
       }
   };
 
-    return (
-        <div className="weather-app">
-            <form className="weatherForm" onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    className="cityInput"
-                    placeholder="Enter city"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                />
-                <button type="submit">Get Weather</button>
-            </form>
+  return (
+    <div className="weather-grid">
+      <form className="weatherForm" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          className="cityInput"
+          placeholder="Enter city"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+        />
+        <button type="submit">Get Weather</button>
+      </form>
 
-            {error && <p className="errorDisplay">{error}</p>}
+      {error && <p className="errorDisplay">{error}</p>}
 
-            {weather && (
-                <div className="card">
-                    <h1>{weather.city}</h1>
-                    <p>{weather.temp}°F</p>
-                    <p>Humidity: {weather.humidity}%</p>
-                    <p>{weather.description}</p>
-                    <p>{weather.emoji}</p>
-                </div>
-            )}
+      {weather && (
+        <div className="card">
+          <h1>{weather.city}</h1>
+            <p>{weather.temp}°C</p>
+            <p>Humidity: {weather.humidity}%</p>
+            <p>{weather.description}</p>
+            <p>{weather.emoji}</p>
         </div>
-    );
+      )}
+    </div>
+  );
 }

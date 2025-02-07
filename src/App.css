@@ -1,74 +1,106 @@
-body{
+body {
   font-family: Arial, sans-serif;
-  background-color: hsl(0, 0%, 95%);
+  background-color: hsl(0, 0%, 70%);
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  place-items: center; /* Zentriert das gesamte Layout */
+  min-height: 100vh;
+  min-width: 100vw;
 }
-.weatherForm{
-  margin: 20px;
+.weather-grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Nur eine Spalte */
+  grid-template-rows: repeat(4, 1fr);; /* Erste Zeile nimmt ganze Höhe ein */
+  background: #ffffff98;
+  border-radius: 30px;
+  margin: 10px;
+  width: 100vw;
+  height: 100vh; /* Setzt die Höhe auf den gesamten Viewport */
 }
-.cityInput{
+
+.weatherForm {
+  grid-column: 1 ;
+  grid-row: 1 / 5;
+  border-top-left-radius: 30px;  /* Nur obere linke Ecke abrunden */
+  border-bottom-left-radius: 30px; 
+  background-color: rgba(255, 255, 255, 0.703);
+  justify-content: center;
+  align-content: center;
+}
+
+.cityInput {
   padding: 10px;
-  font-size: 2rem;
+  margin: 30px;
+  font-size: 1rem;
   font-weight: bold;
   border: 2px solid hsla(0, 0%, 20%, 0.3);
   border-radius: 10px;
-  margin: 10px;
   width: 300px;
 }
-button[type="submit"]{
+
+button[type="submit"] {
   padding: 10px 20px;
   font-weight: bold;
   font-size: 2rem;
   background-color: hsl(122, 39%, 50%);
   color: white;
+  justify-content: center;
+  align-content: center;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
-button[type="submit"]:hover{
+
+button[type="submit"]:hover {
   background-color: hsl(122, 39%, 40%);
 }
-.card{
+
+.card {
   background: linear-gradient(180deg, hsl(210, 100%, 75%), hsl(40, 100%, 75%));
   padding: 50px;
   border-radius: 10px;
   box-shadow: 2px 2px 5px hsla(0, 0%, 0%, 0.5);
   min-width: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  
+  display: grid;
+  gap: 15px; /* Abstand zwischen den Elementen */
+  place-items: center; /* Alle Elemente zentrieren */
 }
-h1{
+
+h1 {
   margin-top: 0;
   margin-bottom: 25px;
 }
-p{
+
+p {
   font-size: 1.5rem;
   margin: 5px 0;
 }
-.cityDisplay, .tempDisplay{
+
+.cityDisplay, .tempDisplay {
   font-size: 3.5rem;
   font-weight: bold;
   color: hsla(0, 0%, 0%, 0.8);
   margin-bottom: 25px;
 }
-.humidityDisplay{
+
+.humidityDisplay {
   font-weight: bold;
   margin-bottom: 25px;
 }
-.descDisplay{
+
+.descDisplay {
   font-style: italic;
   font-weight: bold;
   font-size: 2rem;
 }
-.weatherEmoji{
+
+.weatherEmoji {
   margin: 0;
   font-size: 7.5rem;
 }
-.errorDisplay{
+
+.errorDisplay {
   font-size: 2.5rem;
   font-weight: bold;
   color: hsla(0, 0%, 0%, 0.75);
