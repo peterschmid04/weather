@@ -1,14 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "./App.css";
+import getCloudy from "./images/cloudy.svg";
+import getRain from "./images/rain.svg";
+import getSnow from "./images/snow.svg";
+import getThunderstorm from "./images/thunderstorm.svg";
+import getClear from "./images/clear.svg";
+import getFog from "./images/fog.svg";
+import getClouds from "./images/clouds.svg";
 
 export default function WeatherApp() {
-    const [city, setCity] = useState("");
+    const [city, setCity] = useState("Lossburg");
     const [weather, setWeather] = useState(null);
     const [error, setError] = useState("");
+    const [currentTime, setCurrentTime] = useState("getCurrentDateTime");
 
     const apiKey = "2e014f18136b47b8bdedbe4efac8d619"; 
 
-    const getWeatherData = async (city) => {
+    const getWeatherData = useCallback(async (city) => {
         try {
             const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
             const response = await fetch(apiUrl);
@@ -23,14 +31,25 @@ export default function WeatherApp() {
                 temp: (data.main.temp - 273.15).toFixed(1),
                 humidity: data.main.humidity,
                 description: data.weather[0].description,
-                emoji: getWeatherEmoji(data.weather[0].id),
-            });
+                image: getWeatherImage(data.weather[0].id),
+            });         
             setError("");
         } catch (error) {
             setWeather(null);
             setError("City not found or API issue!");
         }
-    };
+    }, [apiKey]);
+
+    useEffect(() => {
+        getWeatherData("Lossburg"); // Abruf der Wetterdaten für Lossburg beim ersten Laden
+    }, [getWeatherData]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(getCurrentTime());
+        }, 60000); // Aktualisiert die Zeit jede Minute
+        return () => clearInterval(interval); // Bereinigt das Intervall beim Demontieren der Komponente
+    }, []);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -41,51 +60,65 @@ export default function WeatherApp() {
         }
     };
 
-    const getWeatherEmoji = (weatherId) => {
-      switch (true) {
-          case weatherId >= 200 && weatherId < 300:
-              return "⛈️"; // GewitterGewitter
-          case weatherId >= 300 && weatherId < 400:
-              return "🌧"; // Nieselregen
-          case weatherId >= 500 && weatherId < 600:
-              return "🌧"; // Regen
-          case weatherId >= 600 && weatherId < 700:
-            return "🌨️"; // Schnee 
-          case weatherId >= 700 && weatherId < 800:
-              return "🌫️"; // Nebel
-          case weatherId === 800:
-              return "🌤️"; // Klarer Himmel
-          case weatherId >= 801 && weatherId < 810:
-              return "🌥️"; // Bewölkt
-          default:
-              return "❓"; // Unbekanntes Wetter
-      }
-  };
 
-  return (
-    <div className="weather-grid">
-      <form className="weatherForm" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          className="cityInput"
-          placeholder="Enter city"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-        />
-        <button type="submit">Get Weather</button>
-      </form>
+    const getCurrentTime = () => {
+        const now = new Date();
+        return now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+    };
 
-      {error && <p className="errorDisplay">{error}</p>}
+    const getWeatherImage = (weatherId) => {
+        switch (true) {
+            case weatherId >= 200 && weatherId < 300:
+                return getThunderstorm; // Gewitter
+            case weatherId >= 300 && weatherId < 400:
+                return getClouds; // Nieselregen
+            case weatherId >= 500 && weatherId < 600:
+                return getRain; // Regen
+            case weatherId >= 600 && weatherId < 700:
+                return getSnow; // Schnee
+            case weatherId >= 700 && weatherId < 800:
+                return getFog; // Nebel
+            case weatherId === 800:
+                return getClear; // Klarer Himmel
+            case weatherId >= 801 && weatherId < 810:
+                return getCloudy; // Bewölkt
+            default:
+                return getClouds; // Unbekanntes Wetter
+        }
+    };
 
-      {weather && (
-        <div className="card">
-          <h1>{weather.city}</h1>
-            <p>{weather.temp}°C</p>
-            <p>Humidity: {weather.humidity}%</p>
-            <p>{weather.description}</p>
-            <p>{weather.emoji}</p>
+    return (
+        <div className="weather-grid">
+            <form className="weatherForm" onSubmit={handleSubmit}>
+                <input
+                    type="text"
+                    className="cityInput"
+                    placeholder="Search for places..."
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                />
+                {weather && (
+                    <div>
+                        <img src={weather.image} alt={weather.description} />
+                        <div className="temp">{weather.temp}°C</div>
+                        <div className="date">
+                        <div className="time">{currentTime}</div>
+                        </div>
+                        <div className="description">{weather.description}</div>
+                    </div>
+                )}
+            </form>
+
+            {error && <p className="errorDisplay">{error}</p>}
+    
+            {weather && (
+                <div className="card">
+                    <h1>{weather.city}</h1>
+                    <p>{weather.temp}°C</p>
+                    <p>Humidity: {weather.humidity}%</p>
+                    <p>{weather.description}</p>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }

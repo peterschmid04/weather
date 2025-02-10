@@ -1,58 +1,73 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: hsl(0, 0%, 70%);
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+
+/* Wendet border-box auf ALLE Elemente an */
+* {
+  box-sizing: border-box;
   margin: 0;
-  display: grid;
-  place-items: center; /* Zentriert das gesamte Layout */
-  min-height: 100vh;
-  min-width: 100vw;
+  padding: 0;
 }
-.weather-grid{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Nur eine Spalte */
-  grid-template-rows: repeat(4, 1fr);; /* Erste Zeile nimmt ganze Höhe ein */
-  background: #ffffff98;
-  border-radius: 30px;
-  margin: 10px;
+
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: hsl(0, 0%, 70%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100vw;
-  height: 100vh; /* Setzt die Höhe auf den gesamten Viewport */
+  height: 100vh;
+
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  background: #ffffff98;
+  border-radius: 40px;
+  border: 10px solid hsl(0, 0%, 70%); /* Border in der gleichen Farbe wie der Hintergrund */
+  width: 100vw;  /* Nimmt die gesamte Breite */
+  height: 100vh; /* Nimmt die gesamte Höhe */
 }
 
 .weatherForm {
-  grid-column: 1 ;
+  padding: 20px;
+  grid-column: 1;
   grid-row: 1 / 5;
   border-top-left-radius: 30px;  /* Nur obere linke Ecke abrunden */
   border-bottom-left-radius: 30px; 
   background-color: rgba(255, 255, 255, 0.703);
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-content: center;
+  align-items: center;
 }
+
+.weatherForm img {
+  width: 80%;
+  height: 80%;
+  object-fit: fill;
+}
+
+.temp {
+  padding-top: 10px;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
 
 .cityInput {
   padding: 10px;
   margin: 30px;
   font-size: 1rem;
-  font-weight: bold;
-  border: 2px solid hsla(0, 0%, 20%, 0.3);
+  border: none;
+  color: hsl(0, 0%, 0%);
   border-radius: 10px;
   width: 300px;
 }
 
-button[type="submit"] {
-  padding: 10px 20px;
-  font-weight: bold;
-  font-size: 2rem;
-  background-color: hsl(122, 39%, 50%);
-  color: white;
-  justify-content: center;
-  align-content: center;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button[type="submit"]:hover {
-  background-color: hsl(122, 39%, 40%);
+.cityInput:focus {
+  outline: none;
 }
 
 .card {
