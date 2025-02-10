@@ -16,7 +16,6 @@ body {
   align-items: center;
   width: 100vw;
   height: 100vh;
-
 }
 
 .weather-grid {
@@ -30,8 +29,9 @@ body {
   height: 100vh; /* Nimmt die gesamte Höhe */
 }
 
-.weatherForm {
+.sidebar {
   padding: 20px;
+  padding-bottom: 250px;
   grid-column: 1;
   grid-row: 1 / 5;
   border-top-left-radius: 30px;  /* Nur obere linke Ecke abrunden */
@@ -43,16 +43,37 @@ body {
   align-items: center;
 }
 
-.weatherForm img {
+.sidebar .image {
   width: 80%;
   height: 80%;
   object-fit: fill;
 }
 
 .temp {
+  padding-left: 30px;
+  font-size: 4rem;
+}
+.date {
+  display: flex;
   padding-top: 10px;
-  font-size: 2rem;
-  font-weight: bold;
+  padding-left: 25px;
+  font-size: 1.5rem;
+}
+
+.date .time {
+  color: hsl(0, 0%, 33%);
+  margin-left: 50px;
+}
+
+.description {
+  display: flex;
+  padding-top: 30px;
+  padding-left: 25px;
+  font-size: 1.5rem;
+}
+img {
+    width: 50px;
+    height: 50px;
 }
 
 
@@ -69,7 +90,7 @@ body {
 .cityInput:focus {
   outline: none;
 }
-
+/* 
 .card {
   background: linear-gradient(180deg, hsl(210, 100%, 75%), hsl(40, 100%, 75%));
   padding: 50px;
@@ -78,8 +99,8 @@ body {
   min-width: 300px;
   
   display: grid;
-  gap: 15px; /* Abstand zwischen den Elementen */
-  place-items: center; /* Alle Elemente zentrieren */
+  gap: 15px; 
+  place-items: center;
 }
 
 h1 {
@@ -120,3 +141,4 @@ p {
   font-weight: bold;
   color: hsla(0, 0%, 0%, 0.75);
 }
+*/
