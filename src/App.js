@@ -14,6 +14,8 @@ import iconThunderstorm from "./images/icons/thunderstorm.svg";
 import iconClear from "./images/icons/clear.svg";
 import iconFog from "./images/icons/fog.svg";
 import iconClouds from "./images/icons/cloudy.svg";
+import iconSunrise from "./images/icons/sun/sunrise-svgrepo-com.svg";
+import iconSunset from "./images/icons/sun/sunset-svgrepo-com.svg";
 
 export default function WeatherApp() {
     const [city, setCity] = useState("Lossburg");
@@ -53,6 +55,7 @@ export default function WeatherApp() {
                 city: data.name,
                 temp: (data.main.temp - 273.15).toFixed(1),
                 humidity: data.main.humidity,
+                visibility: data.visibility,
                 description: data.weather[0].description,
                 image: getWeatherImage(data.weather[0].id),
                 icon: getWeatherIcons(data.weather[0].id),
@@ -66,13 +69,18 @@ export default function WeatherApp() {
             const sunrise = new Date(data.sys.sunrise * 1000).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
             const sunset = new Date(data.sys.sunset * 1000).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
 
+            const airQualityUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${apiKey}`;
+            const airQualityResponse = await fetch(airQualityUrl);
+            const airQualityData = await airQualityResponse.json();
+            console.log(airQualityData); // Ausgabe der Luftqualitätsdaten in der Konsole
+
             setHighlights([
                 { title: "UV Index", value: uvData.value, unit: "", status: "☀️" },
                 { title: "Wind Status", value: data.wind.speed, unit: "km/h", status: "💨" },
-                { title: "Sunrise & Sunset", value: `${sunrise} / ${sunset}`, unit: "", status: "🌅" },
-                { title: "Humidity", value: data.main.humidity, unit: "%", status : "🌡️" },
+                { title: "Sunrise & Sunset", up: `${sunrise}`, down:`${sunset}`, status: "🌅" },
+                { title: "Humidity", value: data.main.humidity, unit: "%", status : "💧" },
                 { title: "Visibility", value: (data.visibility / 1000).toFixed(1), unit: "km", status: "👀" },
-                { title: "Air Quality", value: "N/A", unit: "", status: "🌫️" }, // Placeholder for air quality
+                { title: "Air Quality", value: airQualityData.list[0].main.aqi, unit: "PM2.5", status: "🌫️" }, // Air quality index
             ]);
             setError("");
         } catch (error) {
@@ -148,6 +156,24 @@ export default function WeatherApp() {
         }
     };
 
+    const getStatus = (value) => {
+
+        switch (true) {
+            case (value <= 50):
+                return "Good🤙";
+            case (value <= 100):
+                return "Moderate😎";
+            case (value <= 150):
+                return "Unhealthy for Sensitive Groups👀";
+            case (value <= 200):
+                return "Unhealthy😬";
+            case (value <= 300):
+                return "Very Unhealthy‼️";
+            default:
+                return "❌Hazardous❌";
+        }
+    };
+
     return (
         <div className="weather-grid">
             <form className="sidebar" onSubmit={handleSubmit}>
@@ -178,7 +204,7 @@ export default function WeatherApp() {
             </form>
             
             {error && <p className="errorDisplay">{error}</p>}
-    
+        
             {weather && (
                 <div className="highlights-container">
                     <h2>Today's Highlights</h2>
@@ -186,7 +212,17 @@ export default function WeatherApp() {
                         {highlights.map((item, index) => (
                         <div key={index} className="highlight-box">
                             <h3>{item.title}</h3>
-                            <p><strong>{item.value}</strong> {item.unit} {item.status}</p>
+                            {item.title === "Sunrise & Sunset" ? (
+                            <div className="sunrise-sunset">
+                                <p><img src={iconSunrise} alt="Sunrise" />{item.up}</p>
+                                <p><img src={iconSunset} alt="Sunset" />{item.down}</p>
+                            </div>
+                            ) : (
+                            <div>
+                                <p><strong>{item.value}</strong> {item.unit}</p>
+                                <p>  {item.status}  {getStatus(item.status)}  </p>
+                            </div>
+                            )}  
                         </div>
                         ))}
                     </div>
