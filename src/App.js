@@ -15,10 +15,10 @@ import iconClear from "./images/icons/clear.svg";
 import iconFog from "./images/icons/fog.svg";
 import iconClouds from "./images/icons/cloudy.svg";
 
-
 export default function WeatherApp() {
     const [city, setCity] = useState("Lossburg");
     const [weather, setWeather] = useState(null);
+    const [highlights, setHighlights] = useState([]);
     const [error, setError] = useState("");
 
     const getCurrentTime = () => {
@@ -47,6 +47,8 @@ export default function WeatherApp() {
             }
 
             const data = await response.json();
+            console.log(data); // Ausgabe der API-Antwort in der Konsole
+
             setWeather({
                 city: data.name,
                 temp: (data.main.temp - 273.15).toFixed(1),
@@ -55,9 +57,27 @@ export default function WeatherApp() {
                 image: getWeatherImage(data.weather[0].id),
                 icon: getWeatherIcons(data.weather[0].id),
             });         
+
+            const uvUrl = `https://api.openweathermap.org/data/2.5/uvi?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${apiKey}`;
+            const uvResponse = await fetch(uvUrl);
+            const uvData = await uvResponse.json();
+            console.log(uvData); // Ausgabe der UV-Daten in der Konsole
+
+            const sunrise = new Date(data.sys.sunrise * 1000).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+            const sunset = new Date(data.sys.sunset * 1000).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+
+            setHighlights([
+                { title: "UV Index", value: uvData.value, unit: "", status: "☀️" },
+                { title: "Wind Status", value: data.wind.speed, unit: "km/h", status: "💨" },
+                { title: "Sunrise & Sunset", value: `${sunrise} / ${sunset}`, unit: "", status: "🌅" },
+                { title: "Humidity", value: data.main.humidity, unit: "%", status : "🌡️" },
+                { title: "Visibility", value: (data.visibility / 1000).toFixed(1), unit: "km", status: "👀" },
+                { title: "Air Quality", value: "N/A", unit: "", status: "🌫️" }, // Placeholder for air quality
+            ]);
             setError("");
         } catch (error) {
             setWeather(null);
+            setHighlights([]);
             setError("City not found or API issue!");
         }
     }, [apiKey]);
@@ -140,29 +160,37 @@ export default function WeatherApp() {
                 />
                 {weather && (
                     <div>
-                        <img className="image" src={weather.image} alt={weather.description} />
-                        <div className="temp">{weather.temp}°C</div>
-                        <div className="date">
-                            <p className="currentDay">{currentDay}</p>
-                            <p className="time">{currentTime}</p>
+                        <div>
+                            <img className="image" src={weather.image} alt={weather.description} />
+                            <div className="temp">{weather.temp}°C</div>
+                            <div className="date">
+                                <p className="currentDay">{currentDay}</p>
+                                <p className="time">{currentTime}</p>
+                            </div>
+                            <div className="description">
+                                <img className="icon" src={weather.icon} alt="()"/>
+                                <p>{weather.description} </p>
+                            </div>    
                         </div>
-                        <div className="description">
-                            <img className="icon" src={weather.icon} />
-                            <p>{weather.description} </p>
-                        </div>    
+                        
                     </div>
                 )}
             </form>
-
+            
             {error && <p className="errorDisplay">{error}</p>}
     
             {weather && (
-                <div className="card">
-                    <h1>{weather.city}</h1>
-                    <p>{weather.temp}°C</p>
-                    <p>Humidity: {weather.humidity}%</p>
-                    <p>{weather.description}</p>
-                </div>
+                <div className="highlights-container">
+                    <h2>Today's Highlights</h2>
+                    <div className="highlights">
+                        {highlights.map((item, index) => (
+                        <div key={index} className="highlight-box">
+                            <h3>{item.title}</h3>
+                            <p><strong>{item.value}</strong> {item.unit} {item.status}</p>
+                        </div>
+                        ))}
+                    </div>
+                </div>    
             )}
         </div>
     );
