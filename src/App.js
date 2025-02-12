@@ -21,6 +21,7 @@ export default function WeatherApp() {
     const [city, setCity] = useState("Lossburg");
     const [weather, setWeather] = useState(null);
     const [highlights, setHighlights] = useState([]);
+    const [forecastData, setForecastData] = useState([]);
     const [error, setError] = useState("");
 
     const getCurrentTime = () => {
@@ -34,8 +35,20 @@ export default function WeatherApp() {
         return now.toLocaleDateString('de-DE', options);
     };
 
+    const getNextSevenDays = () => {
+        const days = [];
+        const options = { weekday: 'short' };
+        for (let i = 0; i < 7; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() + i);
+            days.push(date.toLocaleDateString('de-DE', options));
+        }
+        return days;
+    };
+
     const [currentTime, setCurrentTime] = useState(getCurrentTime());
     const [currentDay, setCurrentDay] = useState(getCurrentDay());
+    const [forecastDays, setForecastDays] = useState(getNextSevenDays());
 
     const apiKey = "2e014f18136b47b8bdedbe4efac8d619"; 
 
@@ -72,15 +85,29 @@ export default function WeatherApp() {
             const airQualityUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${apiKey}`;
             const airQualityResponse = await fetch(airQualityUrl);
             const airQualityData = await airQualityResponse.json();
-            console.log(airQualityData); // Ausgabe der Luftqualitätsdaten in der Konsole
+            // console.log(airQualityData); // Ausgabe der Luftqualitätsdaten in der Konsole
 
+            const forecastUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=minutely,hourly,alerts&appid=${apiKey}`;
+            const forecastResponse = await fetch(forecastUrl);
+            const forecastData = await forecastResponse.json();
+            console.log(forecastData); // Ausgabe der Vorhersagedaten in der Konsole
+
+
+            setForecastData([
+                { day: forecastDays[1], image: getCloudy, minTemp: (forecastData.daily[1].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[1].temp.max - 273.15).toFixed(1) },
+                { day: forecastDays[2], image: getRain, minTemp: (forecastData.daily[2].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[2].temp.max - 273.15).toFixed(1) },
+                { day: forecastDays[3], image: getSnow, minTemp: (forecastData.daily[3].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[3].temp.max - 273.15).toFixed(1) },
+                { day: forecastDays[4], image: getThunderstorm, minTemp: (forecastData.daily[4].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[4].temp.max - 273.15).toFixed(1) },
+                { day: forecastDays[5], image: getClear, minTemp: (forecastData.daily[5].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[5].temp.max - 273.15).toFixed(1) },
+                { day: forecastDays[6], image: getFog, minTemp: (forecastData.daily[6].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[6].temp.max - 273.15).toFixed(1) },
+            ]);
             setHighlights([
-                { title: "UV Index", value: uvData.value, unit: "", status: "☀️" },
-                { title: "Wind Status", value: data.wind.speed, unit: "km/h", status: "💨" },
-                { title: "Sunrise & Sunset", up: `${sunrise}`, down:`${sunset}`, status: "🌅" },
-                { title: "Humidity", value: data.main.humidity, unit: "%", status : "💧" },
-                { title: "Visibility", value: (data.visibility / 1000).toFixed(1), unit: "km", status: "👀" },
-                { title: "Air Quality", value: airQualityData.list[0].main.aqi, unit: "PM2.5", status: "🌫️" }, // Air quality index
+                { title: "UV Index", value: uvData.value, unit: "", status: getStatusUV(uvData.value) },
+                { title: "Wind Status", value: data.wind.speed, unit: "km/h", status: getStatusWind(data.wind.speed) },
+                { title: "Sunrise & Sunset", up: `${sunrise}`, down:`${sunset}`},
+                { title: "Humidity", value: data.main.humidity, unit: "%", status : getStatusHumidity(data.main.humidity) },
+                { title: "Visibility", value: (data.visibility / 1000).toFixed(1), unit: "", status: getStatusVisibility((data.visibility / 1000).toFixed(1)) },
+                { title: "Air Quality", value: airQualityData.list[0].main.aqi, unit: "", status: getStatusAirquality(airQualityData.list[0].main.aqi) }, // Air quality index
             ]);
             setError("");
         } catch (error) {
@@ -88,7 +115,7 @@ export default function WeatherApp() {
             setHighlights([]);
             setError("City not found or API issue!");
         }
-    }, [apiKey]);
+    }, [apiKey, forecastDays]);
 
     useEffect(() => {
         getWeatherData("Lossburg"); // Abruf der Wetterdaten für Lossburg beim ersten Laden
@@ -103,6 +130,10 @@ export default function WeatherApp() {
 
     useEffect(() => {
         setCurrentDay(getCurrentDay());
+    }, []);
+
+    useEffect(() => {
+        setForecastDays(getNextSevenDays());
     }, []);
 
     const handleSubmit = (event) => {
@@ -156,23 +187,79 @@ export default function WeatherApp() {
         }
     };
 
-    const getStatus = (value) => {
-
+    const getStatusUV = (value) => {
         switch (true) {
-            case (value <= 50):
-                return "Good🤙";
-            case (value <= 100):
-                return "Moderate😎";
-            case (value <= 150):
-                return "Unhealthy for Sensitive Groups👀";
-            case (value <= 200):
-                return "Unhealthy😬";
-            case (value <= 300):
-                return "Very Unhealthy‼️";
+            case (value <= 2):
+                return "Low 😶‍🌫️";
+            case (value <= 5):
+                return "Moderate 😬";
+            case (value <= 7):
+                return "High 🧴";
+            case (value <= 10):
+                return "Very High 😎🧴";
             default:
-                return "❌Hazardous❌";
+                return "Extreme 🥵‼️";
         }
     };
+    const getStatusWind = (value) => {
+        switch (true) {
+            case (value <= 5):
+                return "Low 🍃";
+            case (value <= 10):
+                return "Moderate 🌬️";
+            case (value <= 20):
+                return "High 🌬️";
+            case (value <= 30):
+                return "Very High 🌬️❗️";
+            default:
+                return "Extreme 🌪️⚠️";
+        }
+    };
+    const getStatusVisibility = (value) => {
+        switch (true) {
+            case (value <= 1):
+                return "Low 🌫️";
+            case (value <= 3):
+                return "Moderate 🌫️";
+            case (value <= 5):
+                return "High 👀";
+            case (value <= 10):
+                return "Very High 👀";
+            default:
+                return "Extreme 👀";
+        }
+    };
+    const getStatusHumidity = (value) => {
+        switch (true) {
+            case (value <= 30):
+                return "Low 🏜️";
+            case (value <= 60):
+                return "Moderate 🏞️";
+            case (value <= 80):
+                return "High 🌧️";
+            case (value <= 100):
+                return "Very High 🌧️";
+            default:
+                return "Extreme 🌊";
+        }
+    };
+    const getStatusAirquality = (value) => {
+        switch (true) {
+            case (value === 1):
+                return "Good 🟢";
+            case (value === 2):
+                return "Fair 🟡";
+            case (value === 3):
+                return "Moderate 🟠";
+            case (value === 4):
+                return "Poor 🔴";
+            case (value === 5):
+                return "Very Poor 🟤";
+            default:
+                return "Unknown ❓";
+        }
+    };
+    
 
     return (
         <div className="weather-grid">
@@ -201,10 +288,25 @@ export default function WeatherApp() {
                         
                     </div>
                 )}
-            </form>
-            
+            </form>   
             {error && <p className="errorDisplay">{error}</p>}
-        
+            {/* Error schöner machen*/}
+            {weather && (
+                <div className="forecast-container">
+                <div className="forecast">
+                    {forecastData.map((item, index) => (
+                        <div key={index} className="forecast-box">
+                            <p>{item.day}</p>
+                            <img src={item.image} alt={item.description}/>
+                        </div>
+                    ))}
+                </div>
+            </div>  
+            )}
+
+
+
+            {/* Forecasts Platzhalter*/}
             {weather && (
                 <div className="highlights-container">
                     <h2>Today's Highlights</h2>
@@ -220,7 +322,7 @@ export default function WeatherApp() {
                             ) : (
                             <div>
                                 <p><strong>{item.value}</strong> {item.unit}</p>
-                                <p>  {item.status}  {getStatus(item.status)}  </p>
+                                <p>  {item.status}</p>
                             </div>
                             )}  
                         </div>
