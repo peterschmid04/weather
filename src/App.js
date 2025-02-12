@@ -20,9 +20,22 @@ import iconSunset from "./images/icons/sun/sunset-svgrepo-com.svg";
 export default function WeatherApp() {
     const [city, setCity] = useState("Lossburg");
     const [weather, setWeather] = useState(null);
+    const [country, setCountry] = useState("");
     const [highlights, setHighlights] = useState([]);
     const [forecastData, setForecastData] = useState([]);
     const [error, setError] = useState("");
+    const [timezoneOffset, setTimezoneOffset] = useState(0);
+    const [isCelsius, setIsCelsius] = useState(true);
+
+    const timezoneOffsetFormatted = timezoneOffset >= 0 ? `+${timezoneOffset}` : timezoneOffset;
+
+    const handleToggle = () => {
+        setIsCelsius(!isCelsius);
+    };
+
+    const convertTemperature = (temp) => {
+        return isCelsius ? temp : (temp * 9/5 + 32).toFixed(1);
+    };
 
     const getCurrentTime = () => {
         const now = new Date();
@@ -64,6 +77,9 @@ export default function WeatherApp() {
             const data = await response.json();
             console.log(data); // Ausgabe der API-Antwort in der Konsole
 
+            setCountry(data.sys.country);
+            setTimezoneOffset(data.timezone / 3600);
+
             setWeather({
                 city: data.name,
                 temp: (data.main.temp - 273.15).toFixed(1),
@@ -92,15 +108,23 @@ export default function WeatherApp() {
             const forecastData = await forecastResponse.json();
             console.log(forecastData); // Ausgabe der Vorhersagedaten in der Konsole
 
+            // setForecastData(forecastData.daily.slice(1, 8).map((day, index) => ({
+            //     day: forecastDays[index],
+            //     image: getWeatherImage(day.weather[0].id),
+            //     description: day.weather[0].description,
+            //     tempMin: (day.temp.min - 273.15).toFixed(1),
+            //     tempMax: (day.temp.max - 273.15).toFixed(1)
+            // })));
 
             setForecastData([
-                { day: forecastDays[1], image: getCloudy, minTemp: (forecastData.daily[1].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[1].temp.max - 273.15).toFixed(1) },
-                { day: forecastDays[2], image: getRain, minTemp: (forecastData.daily[2].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[2].temp.max - 273.15).toFixed(1) },
-                { day: forecastDays[3], image: getSnow, minTemp: (forecastData.daily[3].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[3].temp.max - 273.15).toFixed(1) },
-                { day: forecastDays[4], image: getThunderstorm, minTemp: (forecastData.daily[4].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[4].temp.max - 273.15).toFixed(1) },
-                { day: forecastDays[5], image: getClear, minTemp: (forecastData.daily[5].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[5].temp.max - 273.15).toFixed(1) },
-                { day: forecastDays[6], image: getFog, minTemp: (forecastData.daily[6].temp.min - 273.15).toFixed(1), maxTemp: (forecastData.daily[6].temp.max - 273.15).toFixed(1) },
+                { day: forecastDays[1], image: getCloudy, minTemp: "12", maxTemp: "22"},
+                { day: forecastDays[2], image: getRain,  minTemp: "", maxTemp: ""},
+                { day: forecastDays[3], image: getSnow,  minTemp: "", maxTemp: "" },
+                { day: forecastDays[4], image: getThunderstorm, minTemp: "", maxTemp: "" },
+                { day: forecastDays[5], image: getClear,  minTemp: "", maxTemp: "" },
+                { day: forecastDays[6], image: getFog,  minTemp: "", maxTemp: "" },
             ]);
+
             setHighlights([
                 { title: "UV Index", value: uvData.value, unit: "", status: getStatusUV(uvData.value) },
                 { title: "Wind Status", value: data.wind.speed, unit: "km/h", status: getStatusWind(data.wind.speed) },
@@ -259,7 +283,14 @@ export default function WeatherApp() {
                 return "Unknown ❓";
         }
     };
-    
+
+    const getCountryFlagEmoji = (countryCode) => {
+        return countryCode
+            .toUpperCase()
+            .replace(/./g, char => String.fromCodePoint(127397 + char.charCodeAt()));
+    };
+
+    const cityExists = weather && !error;
 
     return (
         <div className="weather-grid">
@@ -275,7 +306,7 @@ export default function WeatherApp() {
                     <div>
                         <div>
                             <img className="image" src={weather.image} alt={weather.description} />
-                            <div className="temp">{weather.temp}°C</div>
+                            <div className="temp">{convertTemperature(weather.temp)}°{isCelsius ? 'C' : 'F'}</div>
                             <div className="date">
                                 <p className="currentDay">{currentDay}</p>
                                 <p className="time">{currentTime}</p>
@@ -289,24 +320,32 @@ export default function WeatherApp() {
                     </div>
                 )}
             </form>   
+            {cityExists && (
+                <div className="header">{city}, {getCountryFlagEmoji(country)} UTC{timezoneOffsetFormatted}</div>
+            )}
             {error && <p className="errorDisplay">{error}</p>}
             {/* Error schöner machen*/}
+
+            {/* Toggle Buttons */}
+            <div className="toggle-buttons">
+                <button onClick={() => setIsCelsius(true)} className={isCelsius ? 'active' : ''}>°C</button>
+                <button onClick={() => setIsCelsius(false)} className={!isCelsius ? 'active' : ''}>°F</button>
+            </div>
+
             {weather && (
                 <div className="forecast-container">
                 <div className="forecast">
                     {forecastData.map((item, index) => (
                         <div key={index} className="forecast-box">
                             <p>{item.day}</p>
-                            <img src={item.image} alt={item.description}/>
+                            <img src={item.image} alt=""/>
+                            <p>{convertTemperature(item.minTemp)}° / {convertTemperature(item.maxTemp)}° </p>
                         </div>
                     ))}
                 </div>
             </div>  
             )}
 
-
-
-            {/* Forecasts Platzhalter*/}
             {weather && (
                 <div className="highlights-container">
                     <h2>Today's Highlights</h2>
