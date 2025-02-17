@@ -1,12 +1,22 @@
 import { useState, useEffect, useCallback } from "react";
 import "./App.css";
+import Sidebar from "./components/Sidebar";
+import Forecast from "./components/Forecast";
+import Highlights from "./components/Highlights";
+import Header from "./components/Header";
+
+import getWeatherImage from "./utils/weatherUtils";
+import { getStatusUV } from "./utils/statusUtils";
+// import { useWeather } from "./hooks/useWeather";
+
+// const { weather, getWeatherData } = useWeather("DEIN_API_KEY", "Lossburg");
+
 import getCloudy from "./images/cloudy.svg";
 import getRain from "./images/rain.svg";
 import getSnow from "./images/snow.svg";
 import getThunderstorm from "./images/thunderstorm.svg";
 import getClear from "./images/clear.svg";
 import getFog from "./images/fog.svg";
-import getClouds from "./images/clouds.svg";
 import iconCloudy from "./images/icons/cloudy.svg";
 import iconRain from "./images/icons/rain.svg";
 import iconSnow from "./images/icons/snow.svg";
@@ -14,8 +24,7 @@ import iconThunderstorm from "./images/icons/thunderstorm.svg";
 import iconClear from "./images/icons/clear.svg";
 import iconFog from "./images/icons/fog.svg";
 import iconClouds from "./images/icons/cloudy.svg";
-import iconSunrise from "./images/icons/sun/sunrise-svgrepo-com.svg";
-import iconSunset from "./images/icons/sun/sunset-svgrepo-com.svg";
+
 
 export default function WeatherApp() {
     const [city, setCity] = useState("Lossburg");
@@ -26,16 +35,10 @@ export default function WeatherApp() {
     const [error, setError] = useState("");
     const [timezoneOffset, setTimezoneOffset] = useState(0);
     const [isCelsius, setIsCelsius] = useState(true);
+    const [foundCity, setFoundCity] = useState(false);
+    
 
     const timezoneOffsetFormatted = timezoneOffset >= 0 ? `+${timezoneOffset}` : timezoneOffset;
-
-    const handleToggle = () => {
-        setIsCelsius(!isCelsius);
-    };
-
-    const convertTemperature = (temp) => {
-        return isCelsius ? temp : (temp * 9/5 + 32).toFixed(1);
-    };
 
     const getCurrentTime = () => {
         const now = new Date();
@@ -79,6 +82,7 @@ export default function WeatherApp() {
 
             setCountry(data.sys.country);
             setTimezoneOffset(data.timezone / 3600);
+            setFoundCity(data.name);
 
             setWeather({
                 city: data.name,
@@ -142,7 +146,7 @@ export default function WeatherApp() {
     }, [apiKey, forecastDays]);
 
     useEffect(() => {
-        getWeatherData("Lossburg"); // Abruf der Wetterdaten für Lossburg beim ersten Laden
+        getWeatherData("Lossburg"); // Abruf der Wetterdaten für Lossburg beim ersten Laden der App
     }, [getWeatherData]);
 
     useEffect(() => {
@@ -169,26 +173,6 @@ export default function WeatherApp() {
         }
     };
 
-    const getWeatherImage = (weatherId) => {
-        switch (true) {
-            case weatherId >= 200 && weatherId < 300:
-                return getThunderstorm; // Gewitter
-            case weatherId >= 300 && weatherId < 400:
-                return getClouds; // Nieselregen
-            case weatherId >= 500 && weatherId < 600:
-                return getRain; // Regen
-            case weatherId >= 600 && weatherId < 700:
-                return getSnow; // Schnee
-            case weatherId >= 700 && weatherId < 800:
-                return getFog; // Nebel
-            case weatherId === 800:
-                return getClear; // Klarer Himmel
-            case weatherId >= 801 && weatherId < 810:
-                return getCloudy; // Bewölkt
-            default:
-                return getClouds; // Unbekanntes Wetter
-        }
-    };
 
     const getWeatherIcons = (weatherId) => {
         switch (true) {
@@ -211,20 +195,6 @@ export default function WeatherApp() {
         }
     };
 
-    const getStatusUV = (value) => {
-        switch (true) {
-            case (value <= 2):
-                return "Low 😶‍🌫️";
-            case (value <= 5):
-                return "Moderate 😬";
-            case (value <= 7):
-                return "High 🧴";
-            case (value <= 10):
-                return "Very High 😎🧴";
-            default:
-                return "Extreme 🥵‼️";
-        }
-    };
     const getStatusWind = (value) => {
         switch (true) {
             case (value <= 5):
@@ -284,90 +254,32 @@ export default function WeatherApp() {
         }
     };
 
-    const getCountryFlagEmoji = (countryCode) => {
-        return countryCode
-            .toUpperCase()
-            .replace(/./g, char => String.fromCodePoint(127397 + char.charCodeAt()));
-    };
-
     const cityExists = weather && !error;
 
     return (
         <div className="weather-grid">
-            <form className="sidebar" onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    className="cityInput"
-                    placeholder="Search for places..."
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
+            <Sidebar
+                city={city}
+                setCity={setCity}
+                handleSubmit={handleSubmit}
+                weather={weather}
+                currentDay={currentDay}
+                currentTime={currentTime}
+                isCelsius={isCelsius}
+            /> 
+            {cityExists && weather && (
+                <Header 
+                    foundCity={foundCity} 
+                    country={country} 
+                    timezoneOffsetFormatted={timezoneOffsetFormatted} 
+                    error={error}
+                    isCelsius={isCelsius}
+                    setIsCelsius={setIsCelsius}
                 />
-                {weather && (
-                    <div>
-                        <div>
-                            <img className="image" src={weather.image} alt={weather.description} />
-                            <div className="temp">{convertTemperature(weather.temp)}°{isCelsius ? 'C' : 'F'}</div>
-                            <div className="date">
-                                <p className="currentDay">{currentDay}</p>
-                                <p className="time">{currentTime}</p>
-                            </div>
-                            <div className="description">
-                                <img className="icon" src={weather.icon} alt="()"/>
-                                <p>{weather.description} </p>
-                            </div>    
-                        </div>
-                        
-                    </div>
-                )}
-            </form>   
-            {cityExists && (
-                <div className="header">{city}, {getCountryFlagEmoji(country)} UTC{timezoneOffsetFormatted}</div>
             )}
-            {error && <p className="errorDisplay">{error}</p>}
-            {/* Error schöner machen*/}
-
-            {/* Toggle Buttons */}
-            <div className="toggle-buttons">
-                <button onClick={() => setIsCelsius(true)} className={isCelsius ? 'active' : ''}>°C</button>
-                <button onClick={() => setIsCelsius(false)} className={!isCelsius ? 'active' : ''}>°F</button>
-            </div>
-
+            <Forecast forecastData={forecastData} isCelsius={isCelsius} />
             {weather && (
-                <div className="forecast-container">
-                <div className="forecast">
-                    {forecastData.map((item, index) => (
-                        <div key={index} className="forecast-box">
-                            <p>{item.day}</p>
-                            <img src={item.image} alt=""/>
-                            <p>{convertTemperature(item.minTemp)}° / {convertTemperature(item.maxTemp)}° </p>
-                        </div>
-                    ))}
-                </div>
-            </div>  
-            )}
-
-            {weather && (
-                <div className="highlights-container">
-                    <h2>Today's Highlights</h2>
-                    <div className="highlights">
-                        {highlights.map((item, index) => (
-                        <div key={index} className="highlight-box">
-                            <h3>{item.title}</h3>
-                            {item.title === "Sunrise & Sunset" ? (
-                            <div className="sunrise-sunset">
-                                <p><img src={iconSunrise} alt="Sunrise" />{item.up}</p>
-                                <p><img src={iconSunset} alt="Sunset" />{item.down}</p>
-                            </div>
-                            ) : (
-                            <div>
-                                <p><strong>{item.value}</strong> {item.unit}</p>
-                                <p>  {item.status}</p>
-                            </div>
-                            )}  
-                        </div>
-                        ))}
-                    </div>
-                </div>    
+                <Highlights highlights={highlights} />
             )}
         </div>
     );

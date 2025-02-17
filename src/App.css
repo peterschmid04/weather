@@ -90,46 +90,50 @@ img {
     width: 50px;
     height: 50px;
 }  
-
-.header {
-  grid-column: 2 / 4; 
-  grid-row: 1; 
+/* Styles for the header container */
+.header-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding: 20px;
-  font-size: 3rem;
+  grid-column: 2 / 4; 
+  grid-row: 1; 
 }
 
+/* Styles for the header */
+.header {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+/* Styles for the error message */
+.header p {
+  color: red;
+  font-size: 1rem;
+}
+
+/* Toggle Buttons Styles */
 .toggle-buttons {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
-  padding-top: 20px;
-  font-size: 2rem;
-
-
-  
 }
 
-button {
+.toggle-buttons button {
+  background-color: #bfbfbf;
   border: none;
+  min-height: 50px;
+  min-width: 50px;
+  cursor: pointer;
+  font-size: 20px;
+  margin: 0 5px;
   border-radius: 100%;
-  width: 50px;
-  height: 50px;
-  background: #000000;
-  color: hsl(0, 0%, 100%);
-  margin: 0 10px;
-  font-size: 1.5rem;
-}
-/* Wenn der Button geklickt wird */
-button:active {
-  background-color: #2980b9; /* Dunklere Farbe */
+  transition: background-color 0.3s;
 }
 
-/* Wenn der Button fokussiert (per Tab ausgewählt) wird */
-button:focus {
-  outline: 3px solid #ffcc00; /* Gelber Rahmen */
+.toggle-buttons button.active {
+  background-color: #000000;
+  color: white;
 }
 
 .forecast-container {
@@ -158,6 +162,7 @@ button:focus {
   padding: 15px;
   border-radius: 15px;
   font-size: 1.2rem;
+  text-align: left;
 }
 .forecast-box img {
   width: 70px;
