@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
 
-/* Wendet border-box auf ALLE Elemente an */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -68,6 +67,7 @@ body {
   padding-left: 30px;
   font-size: 4rem;
 }
+
 .date {
   display: flex;
   padding-top: 20px;
@@ -86,37 +86,33 @@ body {
   padding-left: 25px;
   font-size: 1.5rem;
 }
+
 img {
     width: 50px;
     height: 50px;
 }  
 /* Styles for the header container */
-.header-container {
+.header {
   display: flex;
+  grid-row: 1;
+  grid-column: 2 / 4; /* Nimmt die mittleren zwei Spalten ein */
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  grid-column: 2 / 4; 
-  grid-row: 1; 
-}
-
-/* Styles for the header */
-.header {
   font-size: 3rem;
   font-weight: bold;
 }
 
-/* Styles for the error message */
-.header p {
-  color: red;
-  font-size: 1rem;
-}
+/* Styles for the header */
 
 /* Toggle Buttons Styles */
 .toggle-buttons {
   display: flex;
+  grid-row: 1;
+  grid-column: 4;
   justify-content: flex-end;
   align-items: center;
+  padding: 30px;
 }
 
 .toggle-buttons button {

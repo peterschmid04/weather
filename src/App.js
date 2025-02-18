@@ -1,12 +1,18 @@
-import { useState, useEffect, useCallback, React} from "react";
+import { useState, useEffect, useCallback } from "react";
 import "./App.css";
-import Sidebar from "./components/Sidebar";
-import Forecast from "./components/Forecast";
-import Highlights from "./components/Highlights";
-import Header from "./components/Header";
 
 import { getWeatherImage, getWeatherIcons } from "./utils/weatherUtils";
 import { getStatusUV, getStatusWind, getStatusVisibility, getStatusHumidity, getStatusAirquality } from "./utils/statusUtils";
+
+
+import getCloudy from "./images/cloudy.svg";
+import getRain from "./images/rain.svg";
+import getSnow from "./images/snow.svg";
+import getThunderstorm from "./images/thunderstorm.svg";
+import getClear from "./images/clear.svg";
+import getFog from "./images/fog.svg";
+import iconSunrise from "./images/icons/sun/sunrise-svgrepo-com.svg";
+import iconSunset from "./images/icons/sun/sunset-svgrepo-com.svg";
 
 export default function WeatherApp() {
     const [city, setCity] = useState("Lossburg");
@@ -17,9 +23,12 @@ export default function WeatherApp() {
     const [error, setError] = useState("");
     const [timezoneOffset, setTimezoneOffset] = useState(0);
     const [isCelsius, setIsCelsius] = useState(true);
-    const [foundCity, setFoundCity] = useState(false);
 
     const timezoneOffsetFormatted = timezoneOffset >= 0 ? `+${timezoneOffset}` : timezoneOffset;
+    
+    const convertTemperature = (temp) => {
+        return isCelsius ? temp : (temp * 9/5 + 32).toFixed(1);
+    };
 
     const getCurrentTime = () => {
         const now = new Date();
@@ -63,7 +72,6 @@ export default function WeatherApp() {
 
             setCountry(data.sys.country);
             setTimezoneOffset(data.timezone / 3600);
-            setFoundCity(data.name);
 
             setWeather({
                 city: data.name,
@@ -93,13 +101,22 @@ export default function WeatherApp() {
             const forecastData = await forecastResponse.json();
             console.log(forecastData); // Ausgabe der Vorhersagedaten in der Konsole
 
-            setForecastData(forecastData.daily.slice(1, 8).map((day, index) => ({
-                day: forecastDays[index],
-                image: getWeatherImage(day.weather[0].id),
-                description: day.weather[0].description,
-                tempMin: (day.temp.min - 273.15).toFixed(1),
-                tempMax: (day.temp.max - 273.15).toFixed(1)
-            })));
+            // setForecastData(forecastData.daily.slice(1, 8).map((day, index) => ({
+            //     day: forecastDays[index],
+            //     image: getWeatherImage(day.weather[0].id),
+            //     description: day.weather[0].description,
+            //     tempMin: (day.temp.min - 273.15).toFixed(1),
+            //     tempMax: (day.temp.max - 273.15).toFixed(1)
+            // })));
+
+            setForecastData([
+                { day: forecastDays[1], image: getCloudy, minTemp: "12", maxTemp: "22"},
+                { day: forecastDays[2], image: getRain,  minTemp: "", maxTemp: ""},
+                { day: forecastDays[3], image: getSnow,  minTemp: "", maxTemp: "" },
+                { day: forecastDays[4], image: getThunderstorm, minTemp: "", maxTemp: "" },
+                { day: forecastDays[5], image: getClear,  minTemp: "", maxTemp: "" },
+                { day: forecastDays[6], image: getFog,  minTemp: "", maxTemp: "" },
+            ]);
 
             setHighlights([
                 { title: "UV Index", value: uvData.value, unit: "", status: getStatusUV(uvData.value) },
@@ -145,32 +162,89 @@ export default function WeatherApp() {
         }
     };
 
+    const getCountryFlagEmoji = (countryCode) => {
+        return countryCode
+            .toUpperCase()
+            .replace(/./g, char => String.fromCodePoint(127397 + char.charCodeAt()));
+    };
+
     const cityExists = weather && !error;
 
     return (
         <div className="weather-grid">
-            <Sidebar
-                city={city}
-                setCity={setCity}
-                handleSubmit={handleSubmit}
-                weather={weather}
-                currentDay={currentDay}
-                currentTime={currentTime}
-                isCelsius={isCelsius}
-            /> 
-            {cityExists && weather && (
-                <Header 
-                    foundCity={foundCity} 
-                    country={country} 
-                    timezoneOffsetFormatted={timezoneOffsetFormatted} 
-                    error={error}
-                    isCelsius={isCelsius}
-                    setIsCelsius={setIsCelsius}
+            <form className="sidebar" onSubmit={handleSubmit}>
+                <input
+                    type="text"
+                    className="cityInput"
+                    placeholder="Search for places..."
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
                 />
+                {weather && (
+                    <div>
+                        <div>
+                            <img className="image" src={weather.image} alt={weather.description} />
+                            <div className="temp">{convertTemperature(weather.temp)}°{isCelsius ? 'C' : 'F'}</div>
+                            <div className="date">
+                                <p className="currentDay">{currentDay}</p>
+                                <p className="time">{currentTime}</p>
+                            </div>
+                            <div className="description">
+                                <img className="icon" src={weather.icon} alt="()"/>
+                                <p>{weather.description} </p>
+                            </div>    
+                        </div>
+                        
+                    </div>
+                )}
+            </form>   
+            {cityExists && (
+                <div className="header">{city}, {getCountryFlagEmoji(country)} UTC{timezoneOffsetFormatted}</div>
             )}
-            <Forecast forecastData={forecastData} isCelsius={isCelsius} />
+            {error && <p className="errorDisplay">{error}</p>}
+
+            {/* Toggle Buttons */}
+            <div className="toggle-buttons">
+                <button onClick={() => setIsCelsius(true)} className={isCelsius ? 'active' : ''}>°C</button>
+                <button onClick={() => setIsCelsius(false)} className={!isCelsius ? 'active' : ''}>°F</button>
+            </div>
+
             {weather && (
-                <Highlights highlights={highlights} />
+                <div className="forecast-container">
+                <div className="forecast">
+                    {forecastData.map((item, index) => (
+                        <div key={index} className="forecast-box">
+                            <p>{item.day}</p>
+                            <img src={item.image} alt=""/>
+                            <p>{convertTemperature(item.minTemp)}° / {convertTemperature(item.maxTemp)}° </p>
+                        </div>
+                    ))}
+                </div>
+            </div>  
+            )}
+
+            {weather && (
+                <div className="highlights-container">
+                    <h2>Today's Highlights</h2>
+                    <div className="highlights">
+                        {highlights.map((item, index) => (
+                        <div key={index} className="highlight-box">
+                            <h3>{item.title}</h3>
+                            {item.title === "Sunrise & Sunset" ? (
+                            <div className="sunrise-sunset">
+                                <p><img src={iconSunrise} alt="Sunrise" />{item.up}</p>
+                                <p><img src={iconSunset} alt="Sunset" />{item.down}</p>
+                            </div>
+                            ) : (
+                            <div>
+                                <p><strong>{item.value}</strong> {item.unit}</p>
+                                <p>  {item.status}</p>
+                            </div>
+                            )}  
+                        </div>
+                        ))}
+                    </div>
+                </div>    
             )}
         </div>
     );

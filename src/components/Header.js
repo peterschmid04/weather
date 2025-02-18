@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Header({ foundCity, country, timezoneOffsetFormatted, error, isCelsius, setIsCelsius }) {
+export default function Header({ city, country, timezoneOffsetFormatted, error, isCelsius, setIsCelsius }) {
     const getCountryFlagEmoji = (countryCode) => {
         return countryCode
             .toUpperCase()
@@ -9,9 +9,9 @@ export default function Header({ foundCity, country, timezoneOffsetFormatted, er
 
     return (
         <div className="header-container">
-            {foundCity && (
+            {city && (
                 <div className="header">
-                    {foundCity}, {getCountryFlagEmoji(country)} UTC{timezoneOffsetFormatted}
+                    {city}, {getCountryFlagEmoji(country)} UTC{timezoneOffsetFormatted}
                 </div>
             )}
             {error && <p className="header">{error}</p>}
