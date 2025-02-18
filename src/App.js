@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, React} from "react";
 import "./App.css";
 import Sidebar from "./components/Sidebar";
 import Forecast from "./components/Forecast";
@@ -47,7 +47,7 @@ export default function WeatherApp() {
     const [currentDay, setCurrentDay] = useState(getCurrentDay());
     const [forecastDays, setForecastDays] = useState(getNextSevenDays());
 
-    const apiKey = "2e014f18136b47b8bdedbe4efac8d619"; 
+    const apiKey = "15602a28018e8d952821183312c1099c"; 
 
     const getWeatherData = useCallback(async (city) => {
         try {

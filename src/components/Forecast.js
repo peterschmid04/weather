@@ -5,7 +5,7 @@ const convertTemperature = (temp, isCelsius) => {
 };
 
 
-const Forecast = ({ forecastData, isCelsius }) => (
+export default function Forecast({ forecastData, isCelsius }) {
     <div className="forecast-container">
         <div className="forecast">
             {forecastData.map((item, index) => (
@@ -17,6 +17,5 @@ const Forecast = ({ forecastData, isCelsius }) => (
             ))}
         </div>
     </div>
-);
+}
 
-export default Forecast;

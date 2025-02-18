@@ -2,7 +2,7 @@ import React from 'react';
 import iconSunrise from "../images/icons/sun/sunrise-svgrepo-com.svg";
 import iconSunset from "../images/icons/sun/sunset-svgrepo-com.svg";
 
-const Highlights = ({ highlights }) => (
+export default function Highlights({ highlights }) {
     <div className="highlights-container">
         <h2>Today's Highlights</h2>
         <div className="highlights">
@@ -24,6 +24,4 @@ const Highlights = ({ highlights }) => (
             ))}
         </div>
     </div>
-);
-
-export default Highlights;
+}
