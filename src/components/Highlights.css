@@ -1,0 +1,71 @@
+.highlights-container {
+    grid-column: 2 / 5; /* Nimmt alle restlichen Spalten ein */
+    grid-row: 3 / 5; /* Belegt die unteren zwei Zeilen */
+    padding: 20px;
+    display: flex;
+    text-align: left;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+    height: 550px;
+    
+    h2 {
+      align-self: flex-start;
+      margin-bottom: 20px;
+    }
+  }
+  
+  /* Highlights */
+  .highlights {
+    grid-column: 2 / 5; /* Nimmt alle restlichen Spalten ein */
+    grid-row: 3 / 5; /* Belegt die unteren zwei Zeilen */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px;
+    width: 100%;
+    height: 100%;
+    
+  }
+  
+  .highlight-box {
+    background: #F7F7F7;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: left;
+    align-content: center;
+  
+    h3 {
+      font-size: 1.2rem;
+      color: hsl(0, 0%, 33%);
+    
+    }
+    strong {
+      font-size: 3rem;
+      color: hsl(0, 0%, 0%);
+      padding-top: 15px;
+    }
+    p {
+      font-size: 1.2rem;
+      color: hsl(0, 0%, 33%);
+    }
+  }
+  .sunrise-sunset {
+    display: grid;
+    justify-content: space-between;
+    align-items: center;
+    
+  }
+  
+  .sunrise-sunset p {
+    font-size: 2rem;
+    color: hsl(0, 0%, 0%); 
+    display: flex;
+    align-content: center;
+    gap: 20px;
+  }

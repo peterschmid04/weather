@@ -1,12 +1,11 @@
 import React from 'react';
-import "./App.css";
+import "./Sidebar.css";
+
+const convertTemperature = (temp, isCelsius) => {
+    return isCelsius ? temp : ((temp * 9/5) + 32).toFixed(1);
+};
 
 export default function Sidebar({ city, setCity, handleSubmit, weather, currentDay, currentTime, isCelsius }) {
-
-    const convertTemperature = (temp) => {
-        return isCelsius ? temp : ((temp * 9/5) + 32).toFixed(1);
-    };
-
     return (
         <form className="sidebar" onSubmit={handleSubmit}>
             <input
@@ -20,7 +19,7 @@ export default function Sidebar({ city, setCity, handleSubmit, weather, currentD
                 <div>
                     <div>
                         <img className="image" src={weather.image} alt={weather.description} />
-                        <div className="temp">{convertTemperature(weather.temp)}°{isCelsius ? 'C' : 'F'}</div>
+                        <div className="temp">{convertTemperature(weather.temp, isCelsius)}°{isCelsius ? 'C' : 'F'}</div>
                         <div className="date">
                             <p className="currentDay">{currentDay}</p>
                             <p className="time">{currentTime}</p>

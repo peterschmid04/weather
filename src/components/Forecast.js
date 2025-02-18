@@ -1,12 +1,12 @@
-import "./App.css";
+import "./Forecast.css";
 import React from 'react';
 
 const convertTemperature = (temp, isCelsius) => {
     return isCelsius ? temp : (temp * 9/5 + 32).toFixed(1);
 };
 
-
 export default function Forecast({ forecastData, isCelsius }) {
+    return (
     <div className="forecast-container">
         <div className="forecast">
             {forecastData.map((item, index) => (
@@ -18,5 +18,6 @@ export default function Forecast({ forecastData, isCelsius }) {
             ))}
         </div>
     </div>
+    );
 }
 

@@ -1,0 +1,32 @@
+.forecast-container {
+    grid-column: 2 / 5; /* Nimmt alle restlichen Spalten ein */
+    grid-row: 2 / 3; /* Belegt die oberen zwei Zeilen */
+    display: flex;
+    text-align: left;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+  }
+  .forecast {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+    width: 100%;
+    height: 100%;
+    padding-left: 20px;
+    padding-right: 20px;  
+  }
+  .forecast-box {
+    align-content: center;
+    background: #F7F7F7;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    border-radius: 15px;
+    font-size: 1.2rem;
+    text-align: left;
+  }
+  .forecast-box img {
+    width: 70px;
+    height: 70px;
+  }

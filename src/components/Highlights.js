@@ -1,9 +1,10 @@
 import React from 'react';
-import "./App.css";
+import "./Highlights.css";
 import iconSunrise from "../images/icons/sun/sunrise-svgrepo-com.svg";
 import iconSunset from "../images/icons/sun/sunset-svgrepo-com.svg";
 
 export default function Highlights({ highlights }) {
+    return (
     <div className="highlights-container">
         <h2>Today's Highlights</h2>
         <div className="highlights">
@@ -25,4 +26,5 @@ export default function Highlights({ highlights }) {
             ))}
         </div>
     </div>
+    );
 }

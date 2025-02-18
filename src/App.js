@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import "./App.css";
 
+import Forecast from "./components/Forecast";
+import Highlights from "./components/Highlights";   
+import Sidebar from "components/Sidebar";
+
 import { getWeatherImage, getWeatherIcons } from "./utils/weatherUtils";
 import { getStatusUV, getStatusWind, getStatusVisibility, getStatusHumidity, getStatusAirquality } from "./utils/statusUtils";
 
@@ -10,8 +14,7 @@ import getSnow from "./images/snow.svg";
 import getThunderstorm from "./images/thunderstorm.svg";
 import getClear from "./images/clear.svg";
 import getFog from "./images/fog.svg";
-import iconSunrise from "./images/icons/sun/sunrise-svgrepo-com.svg";
-import iconSunset from "./images/icons/sun/sunset-svgrepo-com.svg";
+
 
 export default function WeatherApp() {
     const [inputCity, setInputCity] = useState("Lossburg");
@@ -174,32 +177,16 @@ export default function WeatherApp() {
 
     return (
         <div className="weather-grid">
-            <form className="sidebar" onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    className="cityInput"
-                    placeholder="Search for places..."
-                    value={inputCity}
-                    onChange={(e) => setInputCity(e.target.value)}
-                />
-                {weather && (
-                    <div>
-                        <div>
-                            <img className="image" src={weather.image} alt={weather.description} />
-                            <div className="temp">{convertTemperature(weather.temp)}°{isCelsius ? 'C' : 'F'}</div>
-                            <div className="date">
-                                <p className="currentDay">{currentDay}</p>
-                                <p className="time">{currentTime}</p>
-                            </div>
-                            <div className="description">
-                                <img className="icon" src={weather.icon} alt="()"/>
-                                <p>{weather.description} </p>
-                            </div>    
-                        </div>
-                        
-                    </div>
-                )}
-            </form>   
+            <Sidebar
+                city={inputCity} 
+                setCity={setInputCity} 
+                handleSubmit={handleSubmit} 
+                weather={weather} 
+                currentDay={currentDay} 
+                currentTime={currentTime} 
+                isCelsius={isCelsius} 
+            />   
+            
             {cityExists &&  weather && (
                 <div className="header">{city}, {getCountryFlagEmoji(country)} UTC{timezoneOffsetFormatted}</div>
             )}
@@ -213,41 +200,11 @@ export default function WeatherApp() {
             )}
 
             {weather && (
-                <div className="forecast-container">
-                    <div className="forecast">
-                        {forecastData.map((item, index) => (
-                            <div key={index} className="forecast-box">
-                                <p>{item.day}</p>
-                                <img src={item.image} alt=""/>
-                                <p>{convertTemperature(item.minTemp)}° / {convertTemperature(item.maxTemp)}° </p>
-                            </div>
-                        ))}
-                    </div>
-                </div>  
+                <Forecast forecastData={forecastData} isCelsius={isCelsius} /> // Verwende die Forecast-Komponente
             )}
 
             {weather && (
-                <div className="highlights-container">
-                    <h2>Today's Highlights</h2>
-                    <div className="highlights">
-                        {highlights.map((item, index) => (
-                        <div key={index} className="highlight-box">
-                            <h3>{item.title}</h3>
-                            {item.title === "Sunrise & Sunset" ? (
-                            <div className="sunrise-sunset">
-                                <p><img src={iconSunrise} alt="Sunrise" />{item.up}</p>
-                                <p><img src={iconSunset} alt="Sunset" />{item.down}</p>
-                            </div>
-                            ) : (
-                            <div>
-                                <p><strong>{item.value}</strong> {item.unit}</p>
-                                <p>  {item.status}</p>
-                            </div>
-                            )}  
-                        </div>
-                        ))}
-                    </div>
-                </div>    
+                <Highlights highlights={highlights} /> // Verwende die Highlights-Komponente
             )}
         </div>
     );
