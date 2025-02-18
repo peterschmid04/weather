@@ -20,8 +20,16 @@
     font-weight: bold;
 }
 
+.uv-status {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    font-weight: bold;
+}
+
 .low .uv-bar {
-    background-color: #00ff00;
+    background-color: #fff78c;
 }
 
 .moderate .uv-bar {
@@ -37,5 +45,5 @@
 }
 
 .extreme .uv-bar {
-    background-color: #9900cc;
+    background-color: #870000;
 }

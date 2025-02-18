@@ -49,9 +49,6 @@ body {
   font-weight: bold;
 }
 
-/* Styles for the header */
-
-/* Toggle Buttons Styles */
 .toggle-buttons {
   display: flex;
   grid-row: 1;
