@@ -1,4 +1,5 @@
 import React from 'react';
+import "./App.css";
 import iconSunrise from "../images/icons/sun/sunrise-svgrepo-com.svg";
 import iconSunset from "../images/icons/sun/sunset-svgrepo-com.svg";
 

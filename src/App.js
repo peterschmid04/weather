@@ -4,7 +4,6 @@ import "./App.css";
 import { getWeatherImage, getWeatherIcons } from "./utils/weatherUtils";
 import { getStatusUV, getStatusWind, getStatusVisibility, getStatusHumidity, getStatusAirquality } from "./utils/statusUtils";
 
-
 import getCloudy from "./images/cloudy.svg";
 import getRain from "./images/rain.svg";
 import getSnow from "./images/snow.svg";
@@ -15,6 +14,7 @@ import iconSunrise from "./images/icons/sun/sunrise-svgrepo-com.svg";
 import iconSunset from "./images/icons/sun/sunset-svgrepo-com.svg";
 
 export default function WeatherApp() {
+    const [inputCity, setInputCity] = useState("Lossburg");
     const [city, setCity] = useState("Lossburg");
     const [weather, setWeather] = useState(null);
     const [country, setCountry] = useState("");
@@ -25,7 +25,7 @@ export default function WeatherApp() {
     const [isCelsius, setIsCelsius] = useState(true);
 
     const timezoneOffsetFormatted = timezoneOffset >= 0 ? `+${timezoneOffset}` : timezoneOffset;
-    
+
     const convertTemperature = (temp) => {
         return isCelsius ? temp : (temp * 9/5 + 32).toFixed(1);
     };
@@ -81,7 +81,9 @@ export default function WeatherApp() {
                 description: data.weather[0].description,
                 image: getWeatherImage(data.weather[0].id),
                 icon: getWeatherIcons(data.weather[0].id),
-            });         
+            });
+
+            setCity(data.name); // Setze den Stadtwert auf den tatsächlich gefundenen Wert
 
             const uvUrl = `https://api.openweathermap.org/data/2.5/uvi?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${apiKey}`;
             const uvResponse = await fetch(uvUrl);
@@ -155,8 +157,8 @@ export default function WeatherApp() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (city.trim()) {
-            getWeatherData(city);
+        if (inputCity.trim()) {
+            getWeatherData(inputCity);
         } else {
             setError("Please enter a city!");
         }
@@ -177,8 +179,8 @@ export default function WeatherApp() {
                     type="text"
                     className="cityInput"
                     placeholder="Search for places..."
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    value={inputCity}
+                    onChange={(e) => setInputCity(e.target.value)}
                 />
                 {weather && (
                     <div>
@@ -198,29 +200,30 @@ export default function WeatherApp() {
                     </div>
                 )}
             </form>   
-            {cityExists && (
+            {cityExists &&  weather && (
                 <div className="header">{city}, {getCountryFlagEmoji(country)} UTC{timezoneOffsetFormatted}</div>
             )}
             {error && <p className="errorDisplay">{error}</p>}
 
-            {/* Toggle Buttons */}
-            <div className="toggle-buttons">
-                <button onClick={() => setIsCelsius(true)} className={isCelsius ? 'active' : ''}>°C</button>
-                <button onClick={() => setIsCelsius(false)} className={!isCelsius ? 'active' : ''}>°F</button>
-            </div>
+            {weather && (
+                <div className="toggle-buttons">
+                    <button onClick={() => setIsCelsius(true)} className={isCelsius ? 'active' : ''}>°C</button>
+                    <button onClick={() => setIsCelsius(false)} className={!isCelsius ? 'active' : ''}>°F</button>
+                </div>
+            )}
 
             {weather && (
                 <div className="forecast-container">
-                <div className="forecast">
-                    {forecastData.map((item, index) => (
-                        <div key={index} className="forecast-box">
-                            <p>{item.day}</p>
-                            <img src={item.image} alt=""/>
-                            <p>{convertTemperature(item.minTemp)}° / {convertTemperature(item.maxTemp)}° </p>
-                        </div>
-                    ))}
-                </div>
-            </div>  
+                    <div className="forecast">
+                        {forecastData.map((item, index) => (
+                            <div key={index} className="forecast-box">
+                                <p>{item.day}</p>
+                                <img src={item.image} alt=""/>
+                                <p>{convertTemperature(item.minTemp)}° / {convertTemperature(item.maxTemp)}° </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>  
             )}
 
             {weather && (

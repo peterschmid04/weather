@@ -1,4 +1,5 @@
 import React from 'react';
+import "./App.css";
 
 export default function Sidebar({ city, setCity, handleSubmit, weather, currentDay, currentTime, isCelsius }) {
 

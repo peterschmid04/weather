@@ -1,3 +1,4 @@
+import "./App.css";
 import React from 'react';
 
 export default function Header({ city, country, timezoneOffsetFormatted, error, isCelsius, setIsCelsius }) {

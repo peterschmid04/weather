@@ -102,6 +102,16 @@ img {
   font-size: 3rem;
   font-weight: bold;
 }
+.errorDisplay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 2 /4;
+  grid-row: 1;
+  font-size: 3.5rem;
+  padding: 20px; 
+  font-weight: bold;
+}
 
 /* Styles for the header */
 
