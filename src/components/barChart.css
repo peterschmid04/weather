@@ -1,0 +1,8 @@
+.w3-light-grey {
+    background: rgba(111, 111, 111, 0.661);
+}
+
+.w3-blue {
+    background: navy;
+    transition: width 0.3s ease-in-out;
+}
