@@ -1,49 +1,41 @@
-.uv-index {
+.half-mask-container {
+    width: 260px;  /* Größe der Box */
+    height: 130px; /* Maximale Höhe des Halbkreises */
+    overflow: hidden; /* Verhindert, dass Box größer wird */
+    display: flex;
     position: relative;
-    width: 100%;
-    height: 20px;
-    background-color: #e0e0e0;
-    border-radius: 10px;
+}
+
+.circle1 {
+    border-radius: 100%;
+    height: 260px;
+    width: 260px;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+
+    overflow: hidden;
+    background: conic-gradient(from -90deg, #ffee37 0deg, #ff8c00 90deg, #b40101 180deg);
+}
+.circle2 {
+    border-radius: 100%;
+    height: 220px;
+    width: 190px;
+    background: #f6f6f6;
+
     overflow: hidden;
 }
 
-.uv-bar {
-    height: 100%;
-    transition: width 0.3s ease;
+.uv-container {
+    position: relative;
 }
 
 .uv-value {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
-}
-
-.uv-status {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    font-weight: bold;
-}
-
-.low .uv-bar {
-    background-color: #fff78c;
-}
-
-.moderate .uv-bar {
-    background-color: #ffff00;
-}
-
-.high .uv-bar {
-    background-color: #ff9900;
-}
-
-.very-high .uv-bar {
-    background-color: #ff0000;
-}
-
-.extreme .uv-bar {
-    background-color: #870000;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 3rem;
+    display: flex;
+    justify-content: center;
 }
