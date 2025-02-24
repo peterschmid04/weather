@@ -19,6 +19,8 @@ export default function Highlights({ highlights }) {
                                 <p><img src={iconSunrise} alt="Sunrise" /> {item.up}</p>
                                 <p><img src={iconSunset} alt="Sunset" /> {item.down}</p>
                             </div>
+                        ) : item.title === "Air Quality" ? (
+                            <BarChart value={(((item.value - 1) / 4) * 100)} /> // Hier wird BarChart als Komponente genutzt
                         ) : item.title === "Humidity" ? (
                             <BarChart value={item.value} /> // Hier wird BarChart als Komponente genutzt
                         ) : item.title === "UV Index" ? (

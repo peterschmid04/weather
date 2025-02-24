@@ -3,6 +3,7 @@
 }
 
 .w3-blue {
+    height: 40px;
     background: navy;
     transition: width 0.3s ease-in-out;
 }

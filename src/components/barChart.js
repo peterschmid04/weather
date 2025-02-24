@@ -4,6 +4,8 @@ import React from 'react';
 
 const BarChart = ({ value, status }) => {
     const level = value;
+    console.log(level)
+
     // const airQuality = (value / 5)
     // const level = levelHumidity oder airQuality
     return (
